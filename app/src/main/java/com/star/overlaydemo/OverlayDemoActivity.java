@@ -213,11 +213,7 @@ public class OverlayDemoActivity extends AppCompatActivity {
         mBaiduMap.addOverlay(overlayOptionsGround);
 
         MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory
-                .newLatLng(bounds.getCenter());
-
-        mBaiduMap.setMapStatus(mapStatusUpdate);
-
-        mapStatusUpdate = MapStatusUpdateFactory.zoomTo(14.0f);
+                .newLatLngZoom(bounds.getCenter(), 14.0f);
 
         mBaiduMap.setMapStatus(mapStatusUpdate);
 
