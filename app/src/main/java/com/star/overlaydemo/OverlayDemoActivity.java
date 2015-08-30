@@ -22,9 +22,9 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class OverlayDemoActivity extends AppCompatActivity {
-
 
     /**
      * MapView 是地图主控件
@@ -38,12 +38,12 @@ public class OverlayDemoActivity extends AppCompatActivity {
     private InfoWindow mInfoWindow;
 
     // 初始化全局 bitmap 信息，不用时及时 recycle
-    BitmapDescriptor bdA;
-    BitmapDescriptor bdB;
-    BitmapDescriptor bdC;
-    BitmapDescriptor bdD;
-    BitmapDescriptor bd;
-    BitmapDescriptor bdGround;
+    private BitmapDescriptor mBitmapDescriptorA;
+    private BitmapDescriptor mBitmapDescriptorB;
+    private BitmapDescriptor mBitmapDescriptorC;
+    private BitmapDescriptor mBitmapDescriptorD;
+    private BitmapDescriptor mBitmapDescriptor;
+    private BitmapDescriptor mBitmapDescriptorGround;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,112 +53,15 @@ public class OverlayDemoActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_overlay_demo);
 
-        bdA = BitmapDescriptorFactory
-                .fromResource(R.drawable.icon_marka);
-        bdB = BitmapDescriptorFactory
-                .fromResource(R.drawable.icon_markb);
-        bdC = BitmapDescriptorFactory
-                .fromResource(R.drawable.icon_markc);
-        bdD = BitmapDescriptorFactory
-                .fromResource(R.drawable.icon_markd);
-        bd = BitmapDescriptorFactory
-                .fromResource(R.drawable.icon_gcoding);
-        bdGround = BitmapDescriptorFactory
-                .fromResource(R.drawable.ground_overlay);
+        mMapView = (MapView) findViewById(R.id.map_view);
 
-        mMapView = (MapView) findViewById(R.id.bmapView);
         mBaiduMap = mMapView.getMap();
-        MapStatusUpdate msu = MapStatusUpdateFactory.zoomTo(14.0f);
-        mBaiduMap.setMapStatus(msu);
+
         initOverlay();
-        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
-            public boolean onMarkerClick(final Marker marker) {
-                Button button = new Button(getApplicationContext());
-                button.setBackgroundResource(R.drawable.popup);
-                InfoWindow.OnInfoWindowClickListener listener = null;
-                if (marker == mMarkerA || marker == mMarkerD) {
-                    button.setText("更改位置");
-                    listener = new InfoWindow.OnInfoWindowClickListener() {
-                        public void onInfoWindowClick() {
-                            LatLng ll = marker.getPosition();
-                            LatLng llNew = new LatLng(ll.latitude + 0.005,
-                                    ll.longitude + 0.005);
-                            marker.setPosition(llNew);
-                            mBaiduMap.hideInfoWindow();
-                        }
-                    };
-                    LatLng ll = marker.getPosition();
-                    mInfoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(button), ll, -47, listener);
-                    mBaiduMap.showInfoWindow(mInfoWindow);
-                } else if (marker == mMarkerB) {
-                    button.setText("更改图标");
-                    button.setOnClickListener(new View.OnClickListener() {
-                        public void onClick(View v) {
-                            marker.setIcon(bd);
-                            mBaiduMap.hideInfoWindow();
-                        }
-                    });
-                    LatLng ll = marker.getPosition();
-                    mInfoWindow = new InfoWindow(button, ll, -47);
-                    mBaiduMap.showInfoWindow(mInfoWindow);
-                } else if (marker == mMarkerC) {
-                    button.setText("删除");
-                    button.setOnClickListener(new View.OnClickListener() {
-                        public void onClick(View v) {
-                            marker.remove();
-                            mBaiduMap.hideInfoWindow();
-                        }
-                    });
-                    LatLng ll = marker.getPosition();
-                    mInfoWindow = new InfoWindow(button, ll, -47);
-                    mBaiduMap.showInfoWindow(mInfoWindow);
-                }
-                return true;
-            }
-        });
-
-    }
-
-    public void initOverlay() {
-        // add marker overlay
-        LatLng llA = new LatLng(39.963175, 116.400244);
-        LatLng llB = new LatLng(39.942821, 116.369199);
-        LatLng llC = new LatLng(39.939723, 116.425541);
-        LatLng llD = new LatLng(39.906965, 116.401394);
-
-        OverlayOptions ooA = new MarkerOptions().position(llA).icon(bdA)
-                .zIndex(9).draggable(true);
-        mMarkerA = (Marker) (mBaiduMap.addOverlay(ooA));
-        OverlayOptions ooB = new MarkerOptions().position(llB).icon(bdB)
-                .zIndex(5);
-        mMarkerB = (Marker) (mBaiduMap.addOverlay(ooB));
-        OverlayOptions ooC = new MarkerOptions().position(llC).icon(bdC)
-                .perspective(false).anchor(0.5f, 0.5f).rotate(30).zIndex(7);
-        mMarkerC = (Marker) (mBaiduMap.addOverlay(ooC));
-        ArrayList<BitmapDescriptor> giflist = new ArrayList<BitmapDescriptor>();
-        giflist.add(bdA);
-        giflist.add(bdB);
-        giflist.add(bdC);
-        OverlayOptions ooD = new MarkerOptions().position(llD).icons(giflist)
-                .zIndex(0).period(10);
-        mMarkerD = (Marker) (mBaiduMap.addOverlay(ooD));
-
-        // add ground overlay
-        LatLng southwest = new LatLng(39.92235, 116.380338);
-        LatLng northeast = new LatLng(39.947246, 116.414977);
-        LatLngBounds bounds = new LatLngBounds.Builder().include(northeast)
-                .include(southwest).build();
-
-        OverlayOptions ooGround = new GroundOverlayOptions()
-                .positionFromBounds(bounds).image(bdGround).transparency(0.8f);
-        mBaiduMap.addOverlay(ooGround);
-
-        MapStatusUpdate u = MapStatusUpdateFactory
-                .newLatLng(bounds.getCenter());
-        mBaiduMap.setMapStatus(u);
 
         mBaiduMap.setOnMarkerDragListener(new BaiduMap.OnMarkerDragListener() {
             public void onMarkerDrag(Marker marker) {
+
             }
 
             public void onMarkerDragEnd(Marker marker) {
@@ -170,8 +73,154 @@ public class OverlayDemoActivity extends AppCompatActivity {
             }
 
             public void onMarkerDragStart(Marker marker) {
+
             }
         });
+
+        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            public boolean onMarkerClick(final Marker marker) {
+                Button button = new Button(getApplicationContext());
+                button.setBackgroundResource(R.drawable.popup);
+
+                if (marker == mMarkerA || marker == mMarkerD) {
+                    button.setText("更改位置");
+
+                    LatLng latLngInfo = marker.getPosition();
+
+                    mInfoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(button),
+                            latLngInfo, -47, new InfoWindow.OnInfoWindowClickListener() {
+
+                        public void onInfoWindowClick() {
+                            LatLng latLngOld = marker.getPosition();
+                            LatLng latLngNew = new LatLng(latLngOld.latitude + 0.005,
+                                    latLngOld.longitude + 0.005);
+                            marker.setPosition(latLngNew);
+                            mBaiduMap.hideInfoWindow();
+                        }
+                    });
+
+                    mBaiduMap.showInfoWindow(mInfoWindow);
+                } else if (marker == mMarkerB) {
+                    button.setText("更改图标");
+
+                    button.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            marker.setIcon(mBitmapDescriptor);
+                            mBaiduMap.hideInfoWindow();
+                        }
+                    });
+
+                    LatLng latLngInfo = marker.getPosition();
+
+                    mInfoWindow = new InfoWindow(button, latLngInfo, -47);
+
+                    mBaiduMap.showInfoWindow(mInfoWindow);
+                } else if (marker == mMarkerC) {
+                    button.setText("删除");
+
+                    button.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            marker.remove();
+                            mBaiduMap.hideInfoWindow();
+                        }
+                    });
+
+                    LatLng latLngInfo = marker.getPosition();
+
+                    mInfoWindow = new InfoWindow(button, latLngInfo, -47);
+
+                    mBaiduMap.showInfoWindow(mInfoWindow);
+                }
+                return true;
+            }
+        });
+
+    }
+
+    public void initOverlay() {
+
+        mBitmapDescriptorA = BitmapDescriptorFactory
+                .fromResource(R.drawable.icon_marka);
+        mBitmapDescriptorB = BitmapDescriptorFactory
+                .fromResource(R.drawable.icon_markb);
+        mBitmapDescriptorC = BitmapDescriptorFactory
+                .fromResource(R.drawable.icon_markc);
+        mBitmapDescriptorD = BitmapDescriptorFactory
+                .fromResource(R.drawable.icon_markd);
+        mBitmapDescriptor = BitmapDescriptorFactory
+                .fromResource(R.drawable.icon_gcoding);
+        mBitmapDescriptorGround = BitmapDescriptorFactory
+                .fromResource(R.drawable.ground_overlay);
+
+        // add marker overlay
+        LatLng latLngA = new LatLng(39.963175, 116.400244);
+        LatLng latLngB = new LatLng(39.942821, 116.369199);
+        LatLng latLngC = new LatLng(39.939723, 116.425541);
+        LatLng latLngD = new LatLng(39.906965, 116.401394);
+
+        OverlayOptions overlayOptionsA = new MarkerOptions()
+                .position(latLngA)
+                .icon(mBitmapDescriptorA)
+                .zIndex(9)
+                .draggable(true);
+
+        mMarkerA = (Marker) (mBaiduMap.addOverlay(overlayOptionsA));
+
+        OverlayOptions overlayOptionsB = new MarkerOptions()
+                .position(latLngB)
+                .icon(mBitmapDescriptorB)
+                .zIndex(5);
+
+        mMarkerB = (Marker) (mBaiduMap.addOverlay(overlayOptionsB));
+
+        OverlayOptions overlayOptionsC = new MarkerOptions()
+                .position(latLngC)
+                .icon(mBitmapDescriptorC)
+                .perspective(false)
+                .anchor(0.5f, 0.5f)
+                .rotate(30)
+                .zIndex(7);
+
+        mMarkerC = (Marker) (mBaiduMap.addOverlay(overlayOptionsC));
+
+        List<BitmapDescriptor> bitmapDescriptorList = new ArrayList<>();
+        bitmapDescriptorList.add(mBitmapDescriptorA);
+        bitmapDescriptorList.add(mBitmapDescriptorB);
+        bitmapDescriptorList.add(mBitmapDescriptorC);
+
+        OverlayOptions overlayOptionsD = new MarkerOptions()
+                .position(latLngD)
+                .icons((ArrayList<BitmapDescriptor>) bitmapDescriptorList)
+                .zIndex(0)
+                .period(10);
+
+        mMarkerD = (Marker) (mBaiduMap.addOverlay(overlayOptionsD));
+
+        // add ground overlay
+        LatLng latLngSouthWest = new LatLng(39.92235, 116.380338);
+        LatLng latLngNorthEast = new LatLng(39.947246, 116.414977);
+        LatLngBounds bounds = new LatLngBounds
+                .Builder()
+                .include(latLngNorthEast)
+                .include(latLngSouthWest)
+                .build();
+
+        OverlayOptions overlayOptionsGround = new GroundOverlayOptions()
+                .positionFromBounds(bounds)
+                .image(mBitmapDescriptorGround)
+                .transparency(0.8f);
+
+        mBaiduMap.addOverlay(overlayOptionsGround);
+
+        MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory
+                .newLatLng(bounds.getCenter());
+
+        mBaiduMap.setMapStatus(mapStatusUpdate);
+
+        mapStatusUpdate = MapStatusUpdateFactory.zoomTo(14.0f);
+
+        mBaiduMap.setMapStatus(mapStatusUpdate);
+
     }
 
     /**
@@ -194,31 +243,38 @@ public class OverlayDemoActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        // MapView的生命周期与Activity同步，当activity挂起时需调用MapView.onPause()
-        mMapView.onPause();
-        super.onPause();
+    protected void onResume() {
+
+        super.onResume();
+
+        // MapView的生命周期与Activity同步，当activity恢复时需调用MapView.onResume()
+        mMapView.onResume();
     }
 
     @Override
-    protected void onResume() {
-        // MapView的生命周期与Activity同步，当activity恢复时需调用MapView.onResume()
-        mMapView.onResume();
-        super.onResume();
+    protected void onPause() {
+
+        super.onPause();
+
+        // MapView的生命周期与Activity同步，当activity挂起时需调用MapView.onPause()
+        mMapView.onPause();
     }
 
     @Override
     protected void onDestroy() {
+
+        super.onDestroy();
+
         // MapView的生命周期与Activity同步，当activity销毁时需调用MapView.destroy()
         mMapView.onDestroy();
-        super.onDestroy();
+
         // 回收 bitmap 资源
-        bdA.recycle();
-        bdB.recycle();
-        bdC.recycle();
-        bdD.recycle();
-        bd.recycle();
-        bdGround.recycle();
+        mBitmapDescriptorA.recycle();
+        mBitmapDescriptorB.recycle();
+        mBitmapDescriptorC.recycle();
+        mBitmapDescriptorD.recycle();
+        mBitmapDescriptor.recycle();
+        mBitmapDescriptorGround.recycle();
     }
 
 }

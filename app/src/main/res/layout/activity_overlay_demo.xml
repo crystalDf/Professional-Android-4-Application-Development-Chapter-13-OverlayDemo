@@ -6,39 +6,33 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
         <Button
             android:id="@+id/clear"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_marginBottom="2dip"
-            android:layout_marginLeft="2dip"
-            android:layout_marginRight="2dip"
-            android:layout_marginTop="2dip"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
             android:layout_weight="1"
             android:onClick="clearOverlay"
-            android:padding="10dip"
-            android:text="清除(clear)" />
+            android:padding="10dp"
+            android:text="@string/clear" />
 
         <Button
-            android:id="@+id/resert"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_marginBottom="2dip"
-            android:layout_marginLeft="2dip"
-            android:layout_marginRight="2dip"
-            android:layout_marginTop="2dip"
+            android:id="@+id/reset"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
             android:layout_weight="1"
             android:onClick="resetOverlay"
-            android:text="重置(reset)" />
+            android:text="@string/reset" />
     </LinearLayout>
 
     <com.baidu.mapapi.map.MapView
-        android:id="@+id/bmapView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>
